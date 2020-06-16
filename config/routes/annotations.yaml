@@ -1,0 +1,19 @@
+controllers:
+    resource: ../../src/Controller/
+    type: annotation
+
+controllers_front:
+    prefix: '/{_locale}'
+    name_prefix: 'front_'
+    resource: ../../src/Controller/Front
+    type: annotation
+    defaults:
+        _locale: fr
+    requirements:
+        _locale: en|fr|
+
+controllers_back:
+    prefix: '/admin'
+    name_prefix: 'back_'
+    resource: ../../src/Controller/Back
+    type: annotation
