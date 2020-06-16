@@ -1,0 +1,31 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+    <h1>Liste des utilisateurs</h1>
+
+    {% embed 'embed/_table.html.twig' %}
+        {% block head %}
+            <th>Id</th>
+            <th>Lastname</th>
+            <th>Firstname</th>
+            <th>Birthday</th>
+            <th>actions</th>
+        {% endblock %}
+        {% block body %}
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.lastname|capitalize }}</td>
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.birthday ? user.birthday|date('Y-m-d') : '' }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun utilisateurs existants</td>
+                </tr>
+            {% endfor %}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

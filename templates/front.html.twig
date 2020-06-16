@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body>
+        <nav>
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo">
+                    Bonjour {{ app.user ? app.user.fullName : '' }}
+                </a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="{{ path('front_default_index') }}">Accueil</a></li>
+                    <li><a href="{{ path('front_user_index') }}">Liste des utilisateurs</a></li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li><a href="{{ path('back_default_index') }}">Administration</a></li>
+                    {% endif %}
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <li><a href="{{ path('app_logout') }}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{{ path('app_login') }}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        {% block body %}{% endblock %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script>
+            var flashBag = {{ app.session.flashbag.all()|json_encode|raw }};
+            for (const [type, messages] of Object.entries(flashBag)) {
+                for (message of messages) {
+                    M.toast({
+                        html: message,
+                        classes: type == "success" ? "green pulse" : "red pulse"
+                    })
+                }
+            }
+        </script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

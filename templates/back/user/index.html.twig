@@ -1,0 +1,42 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <h1>User index</h1>
+
+    {% embed 'embed/_table.html.twig' %}
+        {% block head %}
+            <th>Id</th>
+            <th>Lastname</th>
+            <th>Firstname</th>
+            <th>Birthday</th>
+            <th></th>
+            <th>actions</th>
+        {% endblock %}
+        {% block body %}
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.slug }}</td>
+                    <td>{{ user.lastname|capitalize }}</td>
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.birthday ? user.birthday|date('Y-m-d') : '' }}</td>
+                    <td>
+                        <a href="{{ path('back_user_move', {'slug': user.slug, 'move': "up"}) }}">UP</a>
+                        <a href="{{ path('back_user_move', {'slug': user.slug, 'move': "down"}) }}">DOWN</a>
+                    </td>
+                    <td>
+                        <a href="{{ path('back_user_show', {'slug': user.slug}) }}">show</a>
+                        <a href="{{ path('back_user_edit', {'slug': user.slug}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">no records found</td>
+                </tr>
+            {% endfor %}
+        {% endblock %}
+    {% endembed %}
+
+    <a href="{{ path('back_user_new') }}">Create new</a>
+{% endblock %}

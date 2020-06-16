@@ -1,0 +1,24 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block body %}
+    <h1>Edit User</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn">{{ 'form.save'|trans }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('back_user_index') }}">back to list</a>
+
+    <a href="{{ path('back_user_delete', {'slug': user.slug, '_token': csrf_token('delete' ~ user.slug)}) }}">delete</a>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function(){
+            $('select').formSelect();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block breadcrumb %}
+    <a href="#!" class="breadcrumb">Show user</a>
+{% endblock %}
+
+{% block body %}
+    <h1>User</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Slug</th>
+                <td>{{ user.slug }}</td>
+            </tr>
+            <tr>
+                <th>Lastname</th>
+                <td>{{ user.lastname }}</td>
+            </tr>
+            <tr>
+                <th>Firstname</th>
+                <td>{{ user.firstname }}</td>
+            </tr>
+            <tr>
+                <th>Birthday</th>
+                <td>{{ user.birthday ? user.birthday|date('Y-m-d H:i:s T') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,4 @@
+form:
+  save: sauvegarder
+  create: créer
+firstname: prénom

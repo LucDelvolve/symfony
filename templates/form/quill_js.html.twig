@@ -1,0 +1,120 @@
+{% block quill_js_row %}
+    <div class="row">
+        <div id="{{ id }}_container" {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+        {{ form_label(form) }}
+        {{ form_widget(form) }}
+    </div>
+    </div>
+{% endblock quill_js_row %}
+
+{% block quill_js_label %}
+    <label for="{{ id }}">
+        {% if label is empty -%}
+            {%- if label_format is not empty -%}
+                {% set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) %}
+            {%- else -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+        {%- endif -%}
+        {{ label|trans }}
+    </label>
+{% endblock quill_js_label %}
+
+{% block quill_js_widget %}
+    {{ form_errors(form) }}
+    <input type="hidden" {{ block('widget_attributes') }}{% if value is not empty %} value="{{ value }}"{% endif %}/>
+    <div id="{{ id }}_quilljs_body" data-quilljs-editable="{{ id }}">
+        {% if value is not empty %}{{ value|raw }}{% endif %}
+    </div>
+    <script type="text/javascript">
+        if (window.QuillProviderToLoad === undefined) {
+            window.QuillProviderToLoad = [];
+        }
+
+        var QuillProvider = function () {
+            if (window.QuillActivatedEditor === undefined) {
+                window.QuillActivatedEditor = [];
+            }
+
+            var icons = Quill.import('ui/icons');
+            for (var i = 2; i < 5; i++) {
+                icons['header'][i] = `
+                <svg width="17px" height="12px" viewBox="0 0 17 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="h3" fill="currentColor">
+                            <path d="M9,1 L9,11 C9,11.5522847 8.55228475,12 8,12 C7.44771525,12 7,11.5522847 7,11 L7,7 L2,7 L2,11 C2,11.5522847 1.55228475,12 1,12 C0.44771525,12 0,11.5522847 0,11 L0,1 C-1.11022302e-16,0.44771525 0.44771525,0 1,0 C1.55228475,0 2,0.44771525 2,1 L2,5 L7,5 L7,1 C7,0.44771525 7.44771525,0 8,0 C8.55228475,0 9,0.44771525 9,1 Z" id="Shape" fill-rule="nonzero"></path>
+                            <text id="3" font-family="PingFangSC-Semibold, PingFang SC" font-size="9" font-weight="500">
+                                <tspan x="11.3" y="11">${i}</tspan>
+                            </text>
+                        </g>
+                    </g>
+                </svg>`;
+            }
+
+            var
+                container = document.getElementById('{{ id }}_container'),
+                editableBody = document.getElementById('{{ id }}_quilljs_body'),
+                editor = new Quill(editableBody, {
+                    modules: {
+                        toolbar: [
+                            [{'header': 2}, {'header': 3}, {'header': 4}],
+                            [{'color': '#111111'}, {'color': '#F39C11'}, {'color': '#34495E'}],
+                            ['bold', 'italic', 'underline'],
+                            [{'list': 'bullet'}, 'blockquote'],
+                            [{'align': ''}, {'align': 'center'}, {'align': 'right'}, {'align': 'justify'}],
+                            ['image', 'video', 'link'],
+                            ['clean']
+                        ]
+                    },
+                    theme: 'snow',
+                }),
+
+                editorChange = function () {
+                    var containerId = this.id, inputId = containerId.replace('_container', ''),
+                        input = document.getElementById(inputId);
+                    input.value = window.QuillActivatedEditor[containerId].editor.root.innerHTML;
+                    var event = document.createEvent('Event');
+                    event.initEvent('change', true, true);
+                    input.dispatchEvent(event);
+                }
+            ;
+
+            editor.on('text-change', editorChange.bind(container));
+
+            editor.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+                delta.ops = delta.ops.map(op => {
+                    return {
+                        insert: op.insert
+                    }
+                });
+                return delta;
+            });
+
+            window.QuillActivatedEditor['{{ id }}_container'] = {editor: editor, container: container};
+        };
+
+        if (typeof Quill === 'undefined') {
+            window.QuillProviderToLoad.push(QuillProvider);
+            if (window.QuillProviderToLoad.length === 1) {
+                var link = document.createElement('link');
+                link.href = '//cdn.quilljs.com/1.0.0/quill.snow.css';
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = '//cdn.quilljs.com/1.0.0/quill.min.js';
+                script.onload = function () {
+                    for (var i = 0; i < window.QuillProviderToLoad.length; i++) {
+                        window.QuillProviderToLoad[i]();
+                    }
+                };
+                document.head.appendChild(script);
+            }
+        } else {
+            QuillProvider();
+        }
+    </script>
+{% endblock quill_js_widget %}
